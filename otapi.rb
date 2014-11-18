@@ -25,3 +25,9 @@ post '/otapi_v3.ashx/*' do
 	logger.info "RESULT !!! #{result}"
 	result
 end
+
+get '/ip' do
+	m = Mechanize.new
+	b = m.get("http://www.whatismyipaddress.com").body
+	b.match(/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/).to_s
+end
