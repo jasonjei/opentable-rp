@@ -15,14 +15,25 @@ get '/otapi_v3.ashx/*' do
 	m.get(url).body	
 end
 
-get '/mobilecardprocessing.aspx' do
-    m = Mechanize.new { |mech| mech.user_agent = 'iPhone' }
-    url = "https://secure.opentable.com/mobilecardprocessing.aspx"
-    if request.query_string != ""
-      url += "?" + request.query_string
-    end
-    logger.info "Url #{url}"
-    m.get(url).body 
+get '/creditcard' do
+  m = Mechanize.new { |mech| mech.user_agent = 'iPhone' }
+  url = params[:url]
+  result = ""
+  credit_card_page = m.get url + "?" + params[:qs]
+  form = credit_card_page.forms.first
+  
+  if not form
+    result = ""
+  else
+    form.field_with(:name => "customer[payment_method][number]").value = params[:ccn]
+    form.field_with(:name => "customer[payment_method][expiration_month]").value = params[:ccm]
+    form.field_with(:name => "customer[payment_method][expiration_year]").value = params[:ccy]
+    
+    next_page = form.submit
+    result = next_page.body.to_s
+  end
+
+  result
 end
 
 post '/otapi_v3.ashx/*' do
