@@ -15,6 +15,16 @@ get '/otapi_v3.ashx/*' do
 	m.get(url).body	
 end
 
+get '/mobilecardprocessing.aspx' do
+    m = Mechanize.new { |mech| mech.user_agent = 'iPhone' }
+    url = "https://secure.opentable.com/mobilecardprocessing.aspx"
+    if request.query_string != ""
+      url += "?" + request.query_string
+    end
+    logger.info "Url #{url}"
+    m.get(url).body 
+end
+
 post '/otapi_v3.ashx/*' do
 	m = Mechanize.new { |mech| mech.user_agent = 'iPhone' }
 	url = "https://secure.opentable.com/api/otapi_v3.ashx/#{params[:splat].first}"
